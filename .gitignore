@@ -49,7 +49,7 @@ target/
 out/
 
 # Vosk AI Model folder (DO NOT upload to Git; it's too large)
-models/
+vosk-model-small-en-us/
 
 # Log files and system files
 *.log
