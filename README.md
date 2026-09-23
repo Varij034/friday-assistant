@@ -53,7 +53,7 @@ Clone the Repository:
 ```text
 Bash
 
-git clone [https://github.com/YOUR_USERNAME/friday-assistant.git](https://github.com/YOUR_USERNAME/friday-assistant.git)
+git clone https://github.com/Varij034/friday-assistant.git
 cd friday-assistant
 ```
 Add Vosk Model:
