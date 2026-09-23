@@ -7,25 +7,19 @@ public class TextToSpeechService {
 
     public void speak(String text) {
         try {
-            String os = System.getProperty("os.name").toLowerCase();
-            ProcessBuilder builder;
+            // Rate = 2 increases speaking speed slightly (default is 0)
+            String script = String.format(
+                    "Add-Type -AssemblyName System.Speech; " +
+                            "$synth = New-Object System.Speech.Synthesis.SpeechSynthesizer; " +
+                            "$synth.Rate = 2; " +
+                            "$synth.Speak('%s');",
+                    text.replace("'", "''")
+            );
 
-            if (os.contains("win")) {
-                String script = String.format(
-                        "Add-Type –AssemblyName System.Speech; " +
-                                "$synth = New-Object System.Speech.Synthesis.SpeechSynthesizer; " +
-                                "$synth.Speak('%s');", text.replace("'", "''"));
-                builder = new ProcessBuilder("powershell", "-Command", script);
-            } else if (os.contains("mac")) {
-                builder = new ProcessBuilder("say", text);
-            } else {
-                builder = new ProcessBuilder("espeak", text);
-            }
-
-            Process process = builder.start();
-            process.waitFor();
+            ProcessBuilder pb = new ProcessBuilder("powershell.exe", "-Command", script);
+            pb.start();
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println("Error in TextToSpeech: " + e.getMessage());
         }
     }
 }

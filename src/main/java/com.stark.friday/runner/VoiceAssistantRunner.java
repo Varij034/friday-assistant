@@ -61,8 +61,21 @@ public class VoiceAssistantRunner implements CommandLineRunner {
                             break;
                         }
 
-                        // Process general queries via Ollama
-                        String response = brain.askFriday(input);
+                        // Fetch live PC stats
+                        String currentStats = systemControl.getSystemDiagnostics();
+
+                        // Intercept diagnostic queries directly
+                        if (input.contains("system status") || input.contains("system check") || input.contains("diagnostics")) {
+                            String stats = systemControl.getSystemDiagnostics();
+                            String directResponse = "Boss, " + stats;
+                            System.out.println("F.R.I.D.A.Y.: " + directResponse);
+                            tts.speak(directResponse);
+                            continue;
+                        }
+
+                        // Intercept status queries directly or pass to Ollama
+                        String response = brain.chat(input, currentStats);
+
                         System.out.println("F.R.I.D.A.Y.: " + response);
                         tts.speak(response);
                     }

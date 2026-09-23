@@ -8,23 +8,28 @@ public class FridayBrainService {
 
     private final ChatClient chatClient;
 
-    public FridayBrainService(ChatClient.Builder chatClientBuilder) {
-        String fridayPersona = """
-            You are F.R.I.D.A.Y., Varij Mishra's advanced AI assistant.
-            - Address the user as 'Boss'.
-            - Speak with a crisp, direct, and slightly witty Irish tone.
-            - Keep all responses to 1 or 2 short sentences maximum so speech synthesis sounds natural.
-            - Never sound generic or robotic.
-            """;
-
-        this.chatClient = chatClientBuilder
-                .defaultSystem(fridayPersona)
-                .build();
+    public FridayBrainService(ChatClient.Builder builder) {
+        this.chatClient = builder.build();
     }
 
-    public String askFriday(String userPrompt) {
+    public String chat(String userMessage, String systemMetrics) {
+        String systemInstruction = """
+            You are F.R.I.D.A.Y., a professional, highly efficient AI desktop assistant.
+            You are talking directly to your user, Varij, whom you always address as "Boss".
+            
+            STRICT RULES:
+            - ALWAYS address Varij as "Boss".
+            - NEVER invent or make up hardware specs, model numbers, CPU names, or GPU models (e.g., do NOT mention Intel i7, Nvidia, WD Blue, etc.).
+            - ONLY report the exact numerical metrics provided in the system diagnostics below.
+            - DO NOT mention Tony Stark, Iron Man, Arc Reactors, suits, or fictional Marvel lore.
+            - Keep responses concise, direct, and limited to 2 short sentences.
+            
+            Current System Diagnostics: %s
+            """.formatted(systemMetrics);
+
         return chatClient.prompt()
-                .user(userPrompt)
+                .system(systemInstruction)
+                .user(userMessage)
                 .call()
                 .content();
     }
