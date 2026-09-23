@@ -1,11 +1,12 @@
 package com.stark.friday.runner;
 
+import org.vosk.LogLevel;
 import com.stark.friday.service.FridayBrainService;
 import com.stark.friday.service.SystemControlService;
 import com.stark.friday.service.TextToSpeechService;
-import com.alphacephei.vosk.LibVosk;
-import com.alphacephei.vosk.Model;
-import com.alphacephei.vosk.Recognizer;
+import org.vosk.LibVosk;
+import org.vosk.Model;
+import org.vosk.Recognizer;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
@@ -26,7 +27,7 @@ public class VoiceAssistantRunner implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        LibVosk.setLogLevel(-1);
+        LibVosk.setLogLevel(LogLevel.WARNINGS);
 
         try (Model model = new Model("models/vosk-model-small-en-us")) {
             AudioFormat format = new AudioFormat(16000, 16, 1, true, false);
@@ -56,7 +57,7 @@ public class VoiceAssistantRunner implements CommandLineRunner {
                         // Intercept local shutdown command
                         if (input.contains("turn off my pc") || input.contains("shutdown")) {
                             tts.speak("Initiating system shutdown. Goodnight, Boss.");
-                            systemControl.shutdownPC();
+                            systemControl.executeCommand(input);
                             break;
                         }
 
