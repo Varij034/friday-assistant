@@ -1,57 +1,35 @@
+# Maven Target Directory (Compiled class files & JARs)
 target/
-!.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
-
-### IntelliJ IDEA ###
-.idea/modules.xml
-.idea/jarRepositories.xml
-.idea/compiler.xml
-.idea/libraries/
-*.iws
-*.iml
-*.ipr
-
-### Eclipse ###
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
-
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-build/
-!**/src/main/**/build/
-!**/src/test/**/build/
-
-### VS Code ###
-.vscode/
-
-### Mac OS ###
-.DS_Store
-
-# Compiled Java output
-target/
+*.jar
+*.war
+*.ear
 *.class
 
-# IntelliJ IDEA project configuration
+# Except local libraries folder (track the directory structure)
+!libs/
+
+# Vosk Speech Recognition Models (Large binaries)
+models/
+
+# IntelliJ IDEA Project Settings
 .idea/
 *.iml
 *.iws
 *.ipr
 out/
 
-# Vosk AI Model folder (DO NOT upload to Git; it's too large)
-vosk-model-small-en-us/
+# Eclipse / VS Code Metadata
+.settings/
+.project
+.classpath
+.factorypath
+.vscode/
 
-# Log files and system files
+# Environment & Log Files
 *.log
+.env
+application-local.yml
+
+# OS Generated Files
 .DS_Store
 Thumbs.db
