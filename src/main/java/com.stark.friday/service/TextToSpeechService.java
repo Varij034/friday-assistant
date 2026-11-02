@@ -6,20 +6,27 @@ import org.springframework.stereotype.Service;
 public class TextToSpeechService {
 
     public void speak(String text) {
-        try {
-            // Rate = 2 increases speaking speed slightly (default is 0)
-            String script = String.format(
-                    "Add-Type -AssemblyName System.Speech; " +
-                            "$synth = New-Object System.Speech.Synthesis.SpeechSynthesizer; " +
-                            "$synth.Rate = 2; " +
-                            "$synth.Speak('%s');",
-                    text.replace("'", "''")
-            );
+        if (text == null || text.isBlank()) return;
 
-            ProcessBuilder pb = new ProcessBuilder("powershell.exe", "-Command", script);
-            pb.start();
+        // Escape double quotes for PowerShell safety
+        String cleanText = text.replace("\"", "'");
+
+        // PowerShell script selecting Microsoft Zira (Female Voice)
+        String script = String.format(
+                "Add-Type -AssemblyName System.Speech; " +
+                        "$speech = New-Object System.Speech.Synthesis.SpeechSynthesizer; " +
+                        "try { $speech.SelectVoice('Microsoft Zira'); } catch {} " +
+                        "$speech.Rate = 2; " +
+                        "$speech.Speak(\"%s\");", cleanText
+        );
+
+        ProcessBuilder builder = new ProcessBuilder("powershell.exe", "-Command", script);
+
+        try {
+            Process process = builder.start();
+            process.waitFor();
         } catch (Exception e) {
-            System.err.println("Error in TextToSpeech: " + e.getMessage());
+            System.err.println("TTS Error: " + e.getMessage());
         }
     }
 }
