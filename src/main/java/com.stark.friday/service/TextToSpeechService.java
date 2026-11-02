@@ -8,22 +8,31 @@ public class TextToSpeechService {
     public void speak(String text) {
         if (text == null || text.isBlank()) return;
 
-        // Escape double quotes for PowerShell safety
-        String cleanText = text.replace("\"", "'");
+        String cleanText = text.replaceAll("[^a-zA-Z0-9\\s,.'!?]", "").trim();
 
-        // PowerShell script selecting Microsoft Zira (Female Voice)
-        String script = String.format(
+        // Updated PowerShell script with $speech.Rate = 2 (~1.5x speed)
+        String script =
                 "Add-Type -AssemblyName System.Speech; " +
                         "$speech = New-Object System.Speech.Synthesis.SpeechSynthesizer; " +
-                        "try { $speech.SelectVoice('Microsoft Zira'); } catch {} " +
-                        "$speech.Rate = 2; " +
-                        "$speech.Speak(\"%s\");", cleanText
+                        "$femaleVoice = $speech.GetInstalledVoices() | Where-Object { " +
+                        "  $_.VoiceInfo.Gender -eq 'Female' -or $_.VoiceInfo.Name -like '*Zira*' -or $_.VoiceInfo.Name -like '*Hazel*' -or $_.VoiceInfo.Name -like '*Eva*' " +
+                        "} | Select-Object -First 1; " +
+                        "if ($femaleVoice) { $speech.SelectVoice($femaleVoice.VoiceInfo.Name) }; " +
+                        "$speech.Rate = 2; " + // Increased speed to 1.5x
+                        "$speech.Speak($env:TTS_TEXT);";
+
+        ProcessBuilder pb = new ProcessBuilder(
+                "powershell.exe",
+                "-NoProfile",
+                "-ExecutionPolicy", "Bypass",
+                "-Command",
+                script
         );
 
-        ProcessBuilder builder = new ProcessBuilder("powershell.exe", "-Command", script);
+        pb.environment().put("TTS_TEXT", cleanText);
 
         try {
-            Process process = builder.start();
+            Process process = pb.start();
             process.waitFor();
         } catch (Exception e) {
             System.err.println("TTS Error: " + e.getMessage());
